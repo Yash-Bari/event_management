@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Event</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        .center-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 50%;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-container {
+            padding: 20px;
+        }
+
+        .form-container h2 {
+            text-align: center;
+            font-size: 36px;
+            color: #007BFF;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin: 10px 0;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .form-group button {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="center-container">
+        <div class="container">
+            <div class="form-container">
+                <h2>Create Event</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="event_name">Event Name:</label>
+                        <input type="text" id="event_name" name="event_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="event_description">Event Description:</label>
+                        <textarea id="event_description" name="event_description" rows="4" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="event_date">Event Date:</label>
+                        <input type="date" id="event_date" name="event_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="organizer_faculty_name">Organizer Faculty Name:</label>
+                        <input type="text" id="organizer_faculty_name" name="organizer_faculty_name" required>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit">Create Event</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fetch a random image from Unsplash and set it as the background.
+        fetch('https://source.unsplash.com/1920x1080/?dark')
+            .then(response => {
+                document.body.style.backgroundImage = `url('${response.url}')`;
+            });
+    </script>
+</body>
+</html>

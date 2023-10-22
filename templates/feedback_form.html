@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Feedback Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        .center-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            width: 60%;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #007BFF;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        .form-container {
+            width: 80%;
+            margin: 0 auto;
+        }
+        .form-group {
+            margin: 10px 0;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        .form-group button {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .back-button {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .back-button a {
+            display: inline-block;
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="center-container">
+        <div class="container">
+            <h1>Feedback Form for {{ event.event_name }}</h1>
+            <div class="form-container">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="rating">Rating (0-5):</label>
+                        <input type="number" id="rating" name="rating" min="1" max="10" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="suggestions">Suggestions:</label>
+                        <textarea id="suggestions" name="suggestions" rows="4" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit">Submit Feedback</button>
+                    </div>
+                </form>
+            </div>
+            <div class="back-button">
+                <a href="{% url 'view_feedback' event_id=event.id %}">Back to Feedback</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Set a dynamic background image from Unsplash.
+        fetch('https://source.unsplash.com/1920x1080/?creative background')
+            .then(response => {
+                document.body.style.backgroundImage = `url('${response.url}')`;
+            });
+    </script>
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Event List</title>
+    <style>
+        body {
+            font-family: "Arial", sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #F4F4F4;
+            background-image: url('https://source.unsplash.com/1920x1080/?creative backgrounds');
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #007BFF;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #007BFF;
+            color: #fff;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .search-bar {
+            margin-top: 10px;
+            position: relative;
+        }
+        .search-bar input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        .suggestions {
+            position: absolute;
+            background-color: #fff;
+            max-height: 150px;
+            overflow-y: auto;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            display: none;
+        }
+        .suggestions ul {
+            list-style: none;
+            padding: 0;
+        }
+        .suggestions li {
+            padding: 5px;
+            cursor: pointer;
+        }
+        .suggestions li:hover {
+            background-color: #007BFF;
+            color: #fff;
+        }
+        .create-event-button {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px;
+            text-decoration: none;
+            border-radius: 3px;
+            margin-top: 10px;
+        }
+        .button-cell {
+            text-align: center;
+        }
+        .generate-feedback-button {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 5px 10px;
+            text-decoration: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .view-feedback-button {
+            background-color: #009900;
+            color: #fff;
+            padding: 5px 10px;
+            text-decoration: none;
+            border-radius: 3px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 20% auto;
+            padding: 20px;
+            width: 60%;
+            border-radius: 5px;
+        }
+        .close {
+            float: right;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Event List</h1>
+        <a class="create-event-button" href="{% url 'create_event' %}">Create Event</a>
+        <div class="search-bar">
+            <input type="text" id="search" placeholder="Search by Event Name or Organizer Faculty Name">
+            <div class="suggestions"></div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Event Name</th>
+                    <th>Event Description</th>
+                    <th>Event Date</th>
+                    <th>Organizer Faculty Name</th>
+                    <th>Generate Feedback Form</th>
+                    <th>View Feedback</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in events %}
+                <tr>
+                    <td>{{ event.event_name }}</td>
+                    <td>{{ event.event_description }}</td>
+                    <td>{{ event.event_date }}</td>
+                    <td>{{ event.organizer_faculty_name }}</td>
+                    <td class="button-cell">
+                        <a class="generate-feedback-button" onclick="openModal('{{ event.id }}', '{{ event.event_name }}')">Generate</a>
+                    </td>
+                    <td class="button-cell">
+                        <a class="view-feedback-button" href="{% url 'view_feedback' event.id %}">View</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Feedback Form Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <p>Feedback Form URL:</p>
+            <input type="text" id="feedbackUrl" readonly>
+            <button onclick="copyToClipboard()">Copy URL</button>
+        </div>
+    </div>
+    
+    <script>
+        const searchInput = document.getElementById('search');
+        const suggestions = document.querySelector('.suggestions');
+        const modal = document.getElementById('myModal');
+        const feedbackUrlInput = document.getElementById('feedbackUrl');
+        
+        function openModal(eventId, eventName) {
+            const url = window.location.origin + "{% url 'feedback_form' 0 %}".replace('0', eventId);
+            feedbackUrlInput.value = url;
+            modal.style.display = 'block';
+        }
+        
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+        
+        function copyToClipboard() {
+            feedbackUrlInput.select();
+            document.execCommand('copy');
+        }
+        
+        searchInput.addEventListener('input', function() {
+            const query = searchInput.value.toLowerCase();
+            const eventNames = Array.from(document.querySelectorAll('td:first-child')).map(td => td.textContent.toLowerCase());
+            const facultyNames = Array.from(document.querySelectorAll('td:nth-child(4)')).map(td => td.textContent.toLowerCase());
+
+            const results = eventNames.filter(name => name.includes(query)).concat(facultyNames.filter(name => name.includes(query)));
+
+            suggestions.innerHTML = '';
+            if (results.length > 0) {
+                suggestions.style.display = 'block';
+                results.forEach(result => {
+                    const li = document.createElement('li');
+                    li.textContent = result;
+                    li.addEventListener('click', () => {
+                        searchInput.value = result;
+                        suggestions.style.display = 'none';
+                    });
+                    suggestions.appendChild(li);
+                });
+            } else {
+                suggestions.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!suggestions.contains(event.target) && event.target !== searchInput) {
+                suggestions.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

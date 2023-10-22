@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Feedback</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #007BFF;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #007BFF;
+            color: #fff;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .back-button {
+            margin-top: 10px;
+            text-align: center;
+        }
+        .back-button a {
+            display: inline-block;
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 3px;
+        }
+        .rating {
+            display: flex;
+            align-items: center;
+        }
+        .rating span {
+            font-size: 24px;
+        }
+        .rating i {
+            color: #FFD700;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Feedback for {{ event.event_name }}</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Rating</th>
+                    <th>Suggestions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for feedback in feedbacks %}
+                <tr>
+                    <td>{{ feedback.name }}</td>
+                    <td>{{ feedback.email }}</td>
+                    <td class="rating">
+                        <span>{{ feedback.rating }}</span>
+                        <i class="fas fa-star"></i>
+                    </td>
+                    <td>{{ feedback.suggestions }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="back-button">
+            <a href="{% url 'event_list' %}">Back to Event List</a>
+        </div>
+    </div>
+    
+    <script>
+        // Set a dynamic background image from Unsplash.
+        fetch('https://source.unsplash.com/1920x1080/?feedback background')
+            .then(response => {
+                document.body.style.backgroundImage = `url('${response.url}')`;
+            });
+    </script>
+</body>
+</html>
