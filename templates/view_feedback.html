@@ -3,6 +3,8 @@
 <head>
     <title>View Feedback</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+    <!-- Add Chart.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -25,6 +27,24 @@
             color: #007BFF;
             text-transform: uppercase;
             letter-spacing: 3px;
+        }
+        .flex-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .chart-section {
+            width: 32%;
+        }
+        .suggestions-section {
+            width: 32%;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+        .table-section {
+            width: 100%;
+            overflow-y: auto;
+            max-height: 400px;
         }
         table {
             width: 100%;
@@ -72,39 +92,78 @@
 <body>
     <div class="container">
         <h1>Feedback for {{ event.event_name }}</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Rating</th>
-                    <th>Suggestions</th>
-                </tr>
-            </thead>
-            <tbody>
+        <div class="flex-container">
+            <div class="chart-section">
+                <h2>Pie Chart</h2>
+                <!-- Add a canvas element for the pie chart -->
+                <canvas id="pieChart"></canvas>
+            </div>
+            <div class="suggestions-section">
+                <h2>Suggestions</h2>
                 {% for feedback in feedbacks %}
-                <tr>
-                    <td>{{ feedback.name }}</td>
-                    <td>{{ feedback.email }}</td>
-                    <td class="rating">
-                        <span>{{ feedback.rating }}</span>
-                        <i class="fas fa-star"></i>
-                    </td>
-                    <td>{{ feedback.suggestions }}</td>
-                </tr>
+                    <p><i class="fas fa-comment"></i> {{ feedback.suggestions }}</p>
                 {% endfor %}
-            </tbody>
-        </table>
+            </div>
+        </div>
+        <div class="table-section">
+            <h2>Feedback Data Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Rating</th>
+                        <th>Suggestions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for feedback in feedbacks %}
+                        <tr>
+                            <td>{{ feedback.name }}</td>
+                            <td>{{ feedback.email }}</td>
+                            <td class="rating">
+                                <span>{{ feedback.rating }}</span>
+                                <i class="fas fa-star"></i>
+                            </td>
+                            <td>{{ feedback.suggestions }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         <div class="back-button">
             <a href="{% url 'event_list' %}">Back to Event List</a>
         </div>
     </div>
-    
+
     <script>
         // Set a dynamic background image from Unsplash.
         fetch('https://source.unsplash.com/1920x1080/?feedback background')
             .then(response => {
                 document.body.style.backgroundImage = `url('${response.url}')`;
+            });
+
+        // JavaScript to create a pie chart
+        const ctx = document.getElementById('pieChart').getContext('2d');
+
+        // Fetch the ratings data from the server
+        fetch("{% url 'feedback_data' event.id %}")
+            .then(response => response.json())
+            .then(data => {
+                const ratings = data.ratings;
+                const totalRatings = ratings.reduce((a, b) => a + b, 0);
+                const percentages = ratings.map(rating => (rating / totalRatings) * 100);
+
+                const pieChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Poor', 'Fair', 'Average', 'Good', 'Excellent', 'Best'],
+                        datasets: [{
+                            data: percentages,
+                            backgroundColor: ['#FF5733', '#FFC300', '#FFEC3B', '#C0FF3E', '#44FFDD', '#009900'],
+                        }]
+                    },
+                });
             });
     </script>
 </body>

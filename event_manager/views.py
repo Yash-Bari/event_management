@@ -5,6 +5,8 @@ from .forms import EventForm, FeedbackForm
 from django.db.models import Q
 import json
 from django.core.serializers import serialize
+from django.http import JsonResponse
+import json
 
 def create_event(request):
     if request.method == 'POST':
@@ -61,10 +63,21 @@ def search_events(request):
         event_data = serialize('json', events)
         return JsonResponse(json.loads(event_data), safe=False)
 
+
 def feedback_data(request, event_id):
     feedbacks = Feedback.objects.filter(event_id=event_id)
+    ratings = [feedback.rating for feedback in feedbacks]
+    
+    # Count the occurrences of each rating
+    rating_counts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+    for rating in ratings:
+        rating_counts[rating] += 1
+
     data = {
-        "ratings": [feedback.rating for feedback in feedbacks],
+        "ratings": list(rating_counts.values()),
+        "labels": ["1 Star", "2 Stars", "3 Stars", "4 Stars", "5 Stars"],
     }
+    
     return JsonResponse(data)
+
 
